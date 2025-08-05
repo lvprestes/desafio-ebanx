@@ -19,11 +19,6 @@ The project emphasizes simplicity, clear architecture, and strict separation of 
 
 ## Getting Started
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v16+ recommended)
-- [npm](https://www.npmjs.com/)
-
 ### Installation
 
 ```sh
