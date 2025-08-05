@@ -20,5 +20,5 @@ export const getBalance = (req, res) => {
 // Handler to reset the in-memory database to initial state
 export const handleResetReq = (req, res) => {
   resetDb();
-  return res.status(200).json(OK);
+  return res.status(200).json('OK');
 }
