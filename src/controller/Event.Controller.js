@@ -6,7 +6,7 @@ export const handleEventReq = (req, res) => {
 
   // Validate event type presence and type
   if (!type || typeof type !== 'string') {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   // Route the request based on event type
@@ -19,7 +19,7 @@ export const handleEventReq = (req, res) => {
       return handleTransfer(req, res);
     default:
       // Respond with error if event type is unsupported
-      return res.status(400).json(0);
+      return res.status(400).send(0);
   }
 };
 
@@ -29,12 +29,12 @@ function handleDeposit(req, res) {
 
   // Validate destination account ID
   if (!destination || typeof destination !== 'string') {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   // Validate deposit amount
   if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   try {
@@ -43,16 +43,16 @@ function handleDeposit(req, res) {
 
     // Handle failure of deposit operation
     if (!destinationBalance) {
-      return res.status(500).json(0);
+      return res.status(500).send(0);
     }
 
     // Respond with new balance info
-    return res.status(201).json({
+    return res.status(201).send({
       destination: { id: destination, balance: destinationBalance.amount }
     });
   } catch (error) {
     // Handle unexpected errors
-    return res.status(500).json(0);
+    return res.status(500).send(0);
   }
 }
 
@@ -62,12 +62,12 @@ function handleWithdraw(req, res) {
 
   // Validate origin account ID
   if (!origin || typeof origin !== 'string') {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   // Validate withdrawal amount
   if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   try {
@@ -76,16 +76,16 @@ function handleWithdraw(req, res) {
 
     // Handle withdrawal failure (account missing or insufficient funds)
     if (!originBalance) {
-      return res.status(404).json(0);
+      return res.status(404).send(0);
     }
 
     // Respond with new balance info
-    return res.status(201).json({
+    return res.status(201).send({
       origin: { id: origin, balance: originBalance.amount }
     });
   } catch (error) {
     // Handle unexpected errors
-    return res.status(500).json(0);
+    return res.status(500).send(0);
   }
 }
 
@@ -95,12 +95,12 @@ function handleTransfer(req, res) {
 
   // Validate origin and destination account IDs
   if (!origin || typeof origin !== 'string' || !destination || typeof destination !== 'string') {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   // Validate transfer amount
   if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-    return res.status(400).json(0);
+    return res.status(400).send(0);
   }
 
   try {
@@ -109,16 +109,16 @@ function handleTransfer(req, res) {
 
     // Handle failure of transfer (e.g., insufficient funds or accounts missing)
     if (!result) {
-      return res.status(404).json(0);
+      return res.status(404).send(0);
     }
 
     // Respond with updated balance info for both accounts
-    return res.status(201).json({
+    return res.status(201).send({
       origin: { id: origin, balance: result.origin.amount },
       destination: { id: destination, balance: result.destination.amount }
     });
   } catch (error) {
     // Handle unexpected errors
-    return res.status(500).json(0);
+    return res.status(500).send(0);
   }
 }
