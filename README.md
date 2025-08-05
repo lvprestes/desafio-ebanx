@@ -4,6 +4,8 @@ A Node.js REST API developed for the EBANX technical challenge.
 This API simulates basic banking operations (balance inquiry, deposit, withdrawal, and transfer) using only in-memory data storage.  
 The project emphasizes simplicity, clear architecture, and strict separation of concerns between HTTP transport and business logic.
 
+** Developer: Luiz Prestes ** 
+
 ---
 
 ## Features
