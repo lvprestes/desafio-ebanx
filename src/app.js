@@ -20,4 +20,10 @@ app.use('/balance', balanceRoutes);
 app.use('/event', eventRoutes);
 app.use('/reset', resetRoute);
 
+app.use('/', (req, res) => {
+  return res.status(200).json({
+    message: 'Welcome to the Ebanx Challenge API',
+  });
+});
+
 export default app;
