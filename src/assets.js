@@ -1,0 +1,4 @@
+const mockData = {
+  'event': [],
+  'balance': []
+};
