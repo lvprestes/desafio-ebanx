@@ -24,7 +24,7 @@ The project emphasizes simplicity, clear architecture, and strict separation of 
 ### Installation
 
 ```sh
-git clone https://github.com/your-username/desafio-ebanx.git
+git clone https://github.com/lvprestes/desafio-ebanx.git
 cd desafio-ebanx
 npm install
 ```
