@@ -6,7 +6,7 @@ export const handleEventReq = (req, res) => {
 
   // Validate event type presence and type
   if (!type || typeof type !== 'string') {
-    return res.status(400).json({ error: 'Invalid event type' });
+    return res.status(400).json(0);
   }
 
   // Route the request based on event type
@@ -19,7 +19,7 @@ export const handleEventReq = (req, res) => {
       return handleTransfer(req, res);
     default:
       // Respond with error if event type is unsupported
-      return res.status(400).json({ error: 'Unsupported event type' });
+      return res.status(400).json(0);
   }
 };
 
@@ -29,12 +29,12 @@ function handleDeposit(req, res) {
 
   // Validate destination account ID
   if (!destination || typeof destination !== 'string') {
-    return res.status(400).json({ error: 'Destination is required and must be a string' });
+    return res.status(400).json(0);
   }
 
   // Validate deposit amount
   if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-    return res.status(400).json({ error: 'Invalid amount' });
+    return res.status(400).json(0);
   }
 
   try {
@@ -43,7 +43,7 @@ function handleDeposit(req, res) {
 
     // Handle failure of deposit operation
     if (!destinationBalance) {
-      return res.status(500).json({ error: 'Failed to perform deposit' });
+      return res.status(500).json(0);
     }
 
     // Respond with new balance info
@@ -52,7 +52,7 @@ function handleDeposit(req, res) {
     });
   } catch (error) {
     // Handle unexpected errors
-    return res.status(500).json({ error: `Internal deposit error: ${error.message}` });
+    return res.status(500).json(0);
   }
 }
 
@@ -62,12 +62,12 @@ function handleWithdraw(req, res) {
 
   // Validate origin account ID
   if (!origin || typeof origin !== 'string') {
-    return res.status(400).json({ error: 'Origin is required and must be a string' });
+    return res.status(400).json(0);
   }
 
   // Validate withdrawal amount
   if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-    return res.status(400).json({ error: 'Invalid amount' });
+    return res.status(400).json(0);
   }
 
   try {
@@ -76,7 +76,7 @@ function handleWithdraw(req, res) {
 
     // Handle withdrawal failure (account missing or insufficient funds)
     if (!originBalance) {
-      return res.status(404).json({ error: 'Withdraw failed. Account does not exist or insufficient funds.' });
+      return res.status(404).json(0);
     }
 
     // Respond with new balance info
@@ -85,7 +85,7 @@ function handleWithdraw(req, res) {
     });
   } catch (error) {
     // Handle unexpected errors
-    return res.status(500).json({ error: `Internal withdraw error: ${error.message}` });
+    return res.status(500).json(0);
   }
 }
 
@@ -95,12 +95,12 @@ function handleTransfer(req, res) {
 
   // Validate origin and destination account IDs
   if (!origin || typeof origin !== 'string' || !destination || typeof destination !== 'string') {
-    return res.status(400).json({ error: 'Origin and destination are required and must be strings' });
+    return res.status(400).json(0);
   }
 
   // Validate transfer amount
   if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-    return res.status(400).json({ error: 'Invalid amount' });
+    return res.status(400).json(0);
   }
 
   try {
@@ -109,7 +109,7 @@ function handleTransfer(req, res) {
 
     // Handle failure of transfer (e.g., insufficient funds or accounts missing)
     if (!result) {
-      return res.status(404).json({ error: 'Transfer failed. Check balance and accounts.' });
+      return res.status(404).json(0);
     }
 
     // Respond with updated balance info for both accounts
@@ -119,6 +119,6 @@ function handleTransfer(req, res) {
     });
   } catch (error) {
     // Handle unexpected errors
-    return res.status(500).json({ error: `Internal transfer error: ${error.message}` });
+    return res.status(500).json(0);
   }
 }

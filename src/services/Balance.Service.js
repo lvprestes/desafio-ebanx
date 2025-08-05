@@ -80,15 +80,14 @@ export function transferOperation(origin, destination, amount) {
     if (!originBalance) {
       throw new Error('Origin account not found');
     }
-    if (!destBalance) {
-      throw new Error('Destination account not found');
-    }
     if (originBalance.amount < amount) {
       throw new Error('Insufficient balance for transfer');
     }
 
     setBalanceByAccountId(origin, formatAmount(originBalance.amount - amount));
-    setBalanceByAccountId(destination, formatAmount(destBalance.amount + amount));
+    
+    // Updates the destination account balance: adds the amount if the account exists, or sets it as the initial balance if it doesn't
+    setBalanceByAccountId(destination, formatAmount((destBalance) ? destBalance.amount + amount : amount));
 
     return { origin: getBalanceByAccountId(origin), destination: getBalanceByAccountId(destination) };
   } catch (error) {
