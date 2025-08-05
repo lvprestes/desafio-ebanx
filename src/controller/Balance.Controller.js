@@ -1,7 +1,9 @@
 import { resetDb } from '../database/Memory.Database.js';
 import { getBalanceByAccountId } from '../services/Balance.Service.js';
 
-export const getBalance = (req, res) => {  
+// Handler to get the balance for a given account via query parameter
+export const getBalance = (req, res) => {
+  // account_id validation  
   const accountId = req.query.account_id;
   if (!accountId) {
     return res.status(400).json('0');
@@ -15,6 +17,7 @@ export const getBalance = (req, res) => {
   return res.status(200).json({ account_id: accountId, balance });
 }
 
+// Handler to reset the in-memory database to initial state
 export const handleResetReq = (req, res) => {
   resetDb();
   return res.status(200).json('OK');

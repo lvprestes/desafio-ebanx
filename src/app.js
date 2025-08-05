@@ -9,11 +9,13 @@ import resetRoute from './routes/Reset.Routes.js';
 
 const app = express();
 
+// Initialize middlewares
 app.use(express.json());
 app.use(logRequest);
 app.use(corsMiddleware);
 app.use(errorMiddleware);
 
+// Initialize routes
 app.use('/balance', balanceRoutes);
 app.use('/event', eventRoutes);
 app.use('/reset', resetRoute);

@@ -1,45 +1,124 @@
-import Event from '../models/Event.Model.js';
-import { depositOperation, transferOperation } from '../services/Balance.Service.js';
+import { depositOperation, withdrawOperation, transferOperation } from '../services/Balance.Service.js';
 
+// Main handler function for event requests
 export const handleEventReq = (req, res) => {
-  try {
-    const event = new Event(req.body);
+  const { type } = req.body;
 
-    switch (event.type) {
-      //HANDLE ERRORS  
-      case 'deposit': {
-        const { destination, amount } = event;
-        const newBalance = depositOperation(destination, amount);
-        if (!newBalance) {
-          return res.status(500).send('0')
-        }
-        return res.status(201).json({ destination: { id: destination, balance: newBalance } });
-      }
+  // Validate event type presence and type
+  if (!type || typeof type !== 'string') {
+    return res.status(400).json({ error: 'Invalid event type' });
+  }
 
-      //HANDLE ERRORS
-      case 'withdraw': {
-        const { origin, amount } = event;
-        const newBalance = withdrawOperation(origin, amount);
-        if (!newBalance) {
-          return res.status(404).send('0');
-        }
-        return res.status(201).json({ origin: { id: origin, balance: balances[origin] } });
-      }
-
-      //HANDLE ERRORS
-      case 'transfer': { 
-        const { origin, destination, amount } = event;
-        const newBalances = transferOperation(origin, destination, amount);
-        if(!newBalances) {
-          return res.status(404).send('0');
-        }
-        return res.status(201).json({origin: newBalances.origin, destination: newBalances.destination});
-      }
-
-      default:
-        return res.status(400).send('Invalid event type');
-    }
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
+  // Route the request based on event type
+  switch (type) {
+    case 'deposit':
+      return handleDeposit(req, res);
+    case 'withdraw':
+      return handleWithdraw(req, res);
+    case 'transfer':
+      return handleTransfer(req, res);
+    default:
+      // Respond with error if event type is unsupported
+      return res.status(400).json({ error: 'Unsupported event type' });
   }
 };
+
+// Handler for deposit requests
+function handleDeposit(req, res) {
+  const { destination, amount } = req.body;
+
+  // Validate destination account ID
+  if (!destination || typeof destination !== 'string') {
+    return res.status(400).json({ error: 'Destination is required and must be a string' });
+  }
+
+  // Validate deposit amount
+  if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid amount' });
+  }
+
+  try {
+    // Perform the deposit operation
+    const destinationBalance = depositOperation(destination, amount);
+
+    // Handle failure of deposit operation
+    if (!destinationBalance) {
+      return res.status(500).json({ error: 'Failed to perform deposit' });
+    }
+
+    // Respond with new balance info
+    return res.status(201).json({
+      destination: { id: destination, balance: destinationBalance.amount }
+    });
+  } catch (error) {
+    // Handle unexpected errors
+    return res.status(500).json({ error: `Internal deposit error: ${error.message}` });
+  }
+}
+
+// Handler for withdraw requests
+function handleWithdraw(req, res) {
+  const { origin, amount } = req.body;
+
+  // Validate origin account ID
+  if (!origin || typeof origin !== 'string') {
+    return res.status(400).json({ error: 'Origin is required and must be a string' });
+  }
+
+  // Validate withdrawal amount
+  if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid amount' });
+  }
+
+  try {
+    // Perform the withdrawal operation
+    const originBalance = withdrawOperation(origin, amount);
+
+    // Handle withdrawal failure (account missing or insufficient funds)
+    if (!originBalance) {
+      return res.status(404).json({ error: 'Withdraw failed. Account does not exist or insufficient funds.' });
+    }
+
+    // Respond with new balance info
+    return res.status(201).json({
+      origin: { id: origin, balance: originBalance.amount }
+    });
+  } catch (error) {
+    // Handle unexpected errors
+    return res.status(500).json({ error: `Internal withdraw error: ${error.message}` });
+  }
+}
+
+// Handler for transfer requests
+function handleTransfer(req, res) {
+  const { origin, destination, amount } = req.body;
+
+  // Validate origin and destination account IDs
+  if (!origin || typeof origin !== 'string' || !destination || typeof destination !== 'string') {
+    return res.status(400).json({ error: 'Origin and destination are required and must be strings' });
+  }
+
+  // Validate transfer amount
+  if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid amount' });
+  }
+
+  try {
+    // Perform the transfer operation
+    const result = transferOperation(origin, destination, amount);
+
+    // Handle failure of transfer (e.g., insufficient funds or accounts missing)
+    if (!result) {
+      return res.status(404).json({ error: 'Transfer failed. Check balance and accounts.' });
+    }
+
+    // Respond with updated balance info for both accounts
+    return res.status(201).json({
+      origin: { id: origin, balance: result.origin.amount },
+      destination: { id: destination, balance: result.destination.amount }
+    });
+  } catch (error) {
+    // Handle unexpected errors
+    return res.status(500).json({ error: `Internal transfer error: ${error.message}` });
+  }
+}
